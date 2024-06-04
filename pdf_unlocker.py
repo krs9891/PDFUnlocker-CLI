@@ -5,11 +5,23 @@ import PyPDF2.errors
 
 from InquirerPy import inquirer
 from InquirerPy.base.control import Choice
+from yaspin import yaspin
 
 TEST_DIR = 'test-dir'
 
+sp = yaspin()
+
+def handle_failure(message):
+    sp.color = "red"
+    sp.fail()
+    sp.write(message)
+
 def extract_pages_to_new_pdf(input_pdf_path):
     temp_output_pdf_path = 'temp_output.pdf'
+
+    sp.color = "green"
+    sp.text = input_pdf_path
+    sp.start()
 
     try:
         with open(input_pdf_path, 'rb') as input_pdf_file:
@@ -23,12 +35,14 @@ def extract_pages_to_new_pdf(input_pdf_path):
                 writer.write(output_pdf_file)
 
         shutil.move(temp_output_pdf_path, input_pdf_path)
-        print(f"Cleaned {input_pdf_path}")
+        sp.ok()
     except PermissionError:
-        print(f"Could not clean {input_pdf_path} because it is currently in use.")
+        handle_failure(f"Could not process {input_pdf_path} because it is currently in use.")
         os.remove(temp_output_pdf_path)
     except (PyPDF2.errors.EmptyFileError, PyPDF2.errors.PdfReadError):
-        print(f"Could not clean {input_pdf_path} because the file is damaged or unreadable.")
+        handle_failure(f"Could not process {input_pdf_path} because the file is damaged or unreadable.")
+
+    sp.stop()
 
 def get_pdf_choices_from_dir():
     files = [Choice(os.path.join(TEST_DIR, file)) for file in os.listdir(TEST_DIR) if file.endswith(".pdf")]
@@ -55,9 +69,6 @@ def main():
             validate=lambda result: len(result) >= 1,
             invalid_message="You must select at least one file."
         ).execute()
-
-        for file in files_to_process:
-            print(file)
 
     proceed = inquirer.confirm(
         message="Do you want to proceed?",
