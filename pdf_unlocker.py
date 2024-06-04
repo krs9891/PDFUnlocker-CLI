@@ -35,7 +35,7 @@ def main():
     # hard-coded directory for development and testing
     test_dir = 'test-dir'
 
-    files_to_process = [os.path.join(test_dir, file) for file in os.listdir(test_dir) if file.endswith(".pdf")]
+    files_to_process = args.files if args.files else [os.path.join(test_dir, file) for file in os.listdir(test_dir) if file.endswith(".pdf")]
 
     for file in files_to_process:
         extract_pages_to_new_pdf(file)
