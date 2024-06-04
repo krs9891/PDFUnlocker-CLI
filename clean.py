@@ -32,7 +32,10 @@ def main():
     parser.add_argument('files', metavar='F', type=str, nargs='*', help='a list of PDF files to process')
     args = parser.parse_args()
 
-    files_to_process = args.files if args.files else [file for file in os.listdir(os.curdir) if file.endswith(".pdf")]
+    # hard-coded directory for development and testing
+    test_dir = 'test-dir'
+
+    files_to_process = [os.path.join(test_dir, file) for file in os.listdir(test_dir) if file.endswith(".pdf")]
 
     for file in files_to_process:
         extract_pages_to_new_pdf(file)
