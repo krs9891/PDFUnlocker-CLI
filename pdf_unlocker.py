@@ -49,35 +49,40 @@ def get_pdf_choices_from_dir():
     return files
 
 def main():
-    files_list = get_pdf_choices_from_dir()
+    try:
+        files_list = get_pdf_choices_from_dir()
 
-    action = inquirer.select(
-        message="What do you want to do?",
-        choices=[Choice(value="All", name="Unlock All PDFs"), 
-                 Choice(value="Select", name="Select PDFs")],
-        default="All"
-    ).execute()
-
-    if action == "All":
-        files_to_process = [file.value for file in files_list]
-    else:
-        files_to_process = inquirer.checkbox(
-            message="Select file(s):",
-            choices=files_list,
-            transformer=lambda result: "%s file%s selected"
-            % (len(result), "s" if len(result) > 1 else ""),
-            validate=lambda result: len(result) >= 1,
-            invalid_message="You must select at least one file."
+        action = inquirer.select(
+            message="What do you want to do?",
+            choices=[Choice(value="All", name="Unlock All PDFs"), 
+                    Choice(value="Select", name="Select PDFs")],
+            default="All"
         ).execute()
 
-    proceed = inquirer.confirm(
-        message="Do you want to proceed?",
-        default=True
-    ).execute()
+        if action == "All":
+            files_to_process = [file.value for file in files_list]
+        else:
+            files_to_process = inquirer.checkbox(
+                message="Select file(s):",
+                choices=files_list,
+                transformer=lambda result: "%s file%s selected"
+                % (len(result), "s" if len(result) > 1 else ""),
+                validate=lambda result: len(result) >= 1,
+                invalid_message="You must select at least one file."
+            ).execute()
 
-    if proceed:
-        for file in files_to_process:
-            extract_pages_to_new_pdf(file)
+        proceed = inquirer.confirm(
+            message="Do you want to proceed?",
+            default=True
+        ).execute()
+
+        if proceed:
+            for file in files_to_process:
+                extract_pages_to_new_pdf(file)
+
+    except KeyboardInterrupt:
+        print("\nExiting...")
+        exit()
 
 if __name__ == "__main__":
     main()
