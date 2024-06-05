@@ -5,6 +5,7 @@ import PyPDF2.errors
 
 from InquirerPy import inquirer
 from InquirerPy.base.control import Choice
+from InquirerPy.utils import color_print
 from yaspin import yaspin
 
 sp = yaspin()
@@ -44,6 +45,9 @@ def extract_pages_to_new_pdf(input_pdf_path):
 
 def get_pdf_choices_from_dir():
     files = [Choice(file) for file in os.listdir('.') if file.endswith(".pdf")]
+    if not files:
+        color_print([("fg:red", "No PDF files found in the current directory.")])
+        exit()
     return files
 
 def main():
