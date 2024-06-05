@@ -7,8 +7,6 @@ from InquirerPy import inquirer
 from InquirerPy.base.control import Choice
 from yaspin import yaspin
 
-TEST_DIR = 'test-dir'
-
 sp = yaspin()
 
 def handle_failure(message):
@@ -45,7 +43,7 @@ def extract_pages_to_new_pdf(input_pdf_path):
     sp.stop()
 
 def get_pdf_choices_from_dir():
-    files = [Choice(os.path.join(TEST_DIR, file)) for file in os.listdir(TEST_DIR) if file.endswith(".pdf")]
+    files = [Choice(file) for file in os.listdir('.') if file.endswith(".pdf")]
     return files
 
 def main():
