@@ -33,7 +33,7 @@ jobs:
 
       - name: Build executable with PyInstaller
         run: |
-          pyinstaller --onefile pdf_unlocker.py
+          pyinstaller --onefile --name pdfunlocker pdf_unlocker.py
 
       - name: Download Inno Setup
         run: |
