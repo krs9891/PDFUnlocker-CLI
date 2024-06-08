@@ -45,13 +45,12 @@ jobs:
         run: |
           echo [Setup] > installer.iss
           echo AppName=PDFUnlocker >> installer.iss
-          VERSION=${{ github.ref }}
-          VERSION=%VERSION#refs/tags/}
+          set "VERSION=${{ github.ref }}"
+          set "VERSION=%VERSION:refs/heads/=%%"
           echo AppVersion=%VERSION% >> installer.iss
-          echo AppVersion=$VERSION >> installer.iss
           echo DefaultDirName={pf}\\PDFUnlocker >> installer.iss
           echo DefaultGroupName=PDFUnlocker >> installer.iss
-          echo OutputBaseFilename=PDFUnlockerInstaller_$VERSION >> installer.iss
+          echo OutputBaseFilename=PDFUnlockerInstaller_%VERSION% >> installer.iss
           echo Compression=lzma >> installer.iss
           echo SolidCompression=yes >> installer.iss
           echo [Files] >> installer.iss
