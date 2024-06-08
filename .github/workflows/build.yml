@@ -46,8 +46,8 @@ jobs:
           echo [Setup] > installer.iss
           echo AppName=PDFUnlocker >> installer.iss
           VERSION=${{ github.ref }}
-          VERSION=${VERSION#refs/tags/}
-          echo "::set-output name=VERSION::$VERSION"
+          VERSION=%VERSION#refs/tags/}
+          echo AppVersion=%VERSION% >> installer.iss
           echo AppVersion=$VERSION >> installer.iss
           echo DefaultDirName={pf}\\PDFUnlocker >> installer.iss
           echo DefaultGroupName=PDFUnlocker >> installer.iss
