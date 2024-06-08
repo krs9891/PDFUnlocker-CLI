@@ -56,7 +56,7 @@ jobs:
           echo [Files] >> installer.iss
           echo Source: "dist/pdfunlocker.exe"; DestDir: "{app}"; Flags: ignoreversion >> installer.iss
           echo [Run] >> installer.iss
-          echo Filename: "{cmd}"; Parameters: "/C setx PATH \"%%PATH%%;{app}\" /M"; Flags: runhidden shellexec runascurrentuser; >> installer.iss
+          echo Filename: "{cmd"; Parameters: "/C setx PATH \"%%PATH%%;{app}\" /M"; Flags: runhidden shellexec runascurrentuser; >> installer.iss
         shell: cmd
 
       - name: Build installer
