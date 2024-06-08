@@ -1,0 +1,123 @@
+name: Package and release
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+  workflow_dispatch:
+
+jobs:
+  render_installer_script:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: rendering Inno Setup script
+        uses: cuchi/jinja2-action@v1.2.2
+        with:
+          template: .github/workflows/installer.iss.j2
+          output_file: installer.iss
+          variables: |
+            app_name=PDFUnlocker
+            app_id={{51FBCD54-2969-48AC-B0C0-E7ED765EE69D}
+            version=${{ github.ref }}
+
+      - name: Upload installer script
+        uses: actions/upload-artifact@v4
+        with:
+          name: installer
+          path: |
+            installer.iss
+            modpath.iss
+            LICENSE
+
+  package:
+    runs-on: windows-latest
+    needs: render_installer_script
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5.1.0
+        with:
+          python-version: 3.x
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Install PyInstaller
+        run: |
+          pip install pyinstaller
+
+      - name: Build executable with PyInstaller
+        run: |
+          pyinstaller --onefile --name pdfunlocker pdf_unlocker.py
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: pdfunlocker
+          path: dist/
+
+  build_installer:
+    runs-on: windows-latest
+    needs: package
+    steps:
+      - name: checkout code
+        uses: actions/checkout@v4
+
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          merge-multiple: true
+
+      - name: Compile .iss to .exe installer
+        uses: Minionguyjpro/Inno-Setup-Action@v1.2.4
+        with:
+          path: installer.iss
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: installer_exe
+          path: Output/
+
+  release:
+    runs-on: ubuntu-latest
+    needs: build_installer
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: installer_exe
+
+      - name: Create release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          draft: false
+          prerelease: true
+
+      - name: Upload release assets
+        id: upload-release-asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./PDFUnlocker_${{ github.ref }}_Installer.exe
+          asset_name: PDFUnlocker_${{ github.ref }}_Installer.exe
+          asset_content_type: application/octet-stream
