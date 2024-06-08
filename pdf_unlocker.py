@@ -2,11 +2,13 @@ import os
 import PyPDF2
 import shutil
 import PyPDF2.errors
+import argparse
 
 from InquirerPy import inquirer
 from InquirerPy.base.control import Choice
 from InquirerPy.utils import color_print
 from yaspin import yaspin
+from version import __version__
 
 sp = yaspin()
 
@@ -51,6 +53,10 @@ def get_pdf_choices_from_dir():
     return files
 
 def main():
+    parser = argparse.ArgumentParser(description="Unlock PDF files by extracting all pages to a new PDF file.")
+    parser.add_argument("-v", "--version", action="version", version=f"PDFUnlocker-CLI version {__version__}")
+    args = parser.parse_args()
+    
     try:
         files_list = get_pdf_choices_from_dir()
 
