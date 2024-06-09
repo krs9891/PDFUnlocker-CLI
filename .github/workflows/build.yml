@@ -10,6 +10,28 @@ env:
   VERSION: "0.1.0" # Hardcoded version for testing
 
 jobs:
+  render:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: rendering Inno Setup script
+        uses: cuchi/jinja2-action@v1.2.2
+        with:
+          template: installer.iss.j2
+          output: installer.iss
+          variables: |
+            app_name=PDFUnlocker
+            app_id={51FBCD54-2969-48AC-B0C0-E7ED765EE69D}
+            version=$VERSION
+
+      - name: Upload installer script
+        uses: actions/upload-artifact@v2
+        with:
+          name: installer
+          path: installer.iss
+
   build:
     runs-on: windows-latest
 
@@ -40,13 +62,10 @@ jobs:
           choco install -y innosetup
         shell: cmd
 
-      - name: Install j2cli
-        run: pip install j2cli
-
-      - name: Render installer script
-        run: |
-          python -m j2cli.cli installer.iss.j2 -o installer.iss -D app_name=PDFUnlocker -D app_id={51FBCD54-2969-48AC-B0C0-E7ED765EE69D} -D version=$VERSION
-        shell: pwsh
+      - name: Download installer script
+        uses: actions/download-artifact@v2
+        with:
+          name: installer
 
       - name: Build installer
         run: |
