@@ -1,0 +1,26 @@
+name: Test Jinja2 Action
+
+on: [push]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: "3.x"
+
+      - name: rendering Inno Setup script
+        uses: cuchi/jinja2-action@v1.2.2
+        with:
+          template: .github/workflows/installer.iss.j2
+          output: .github/workflows/installer.iss
+          variables: |
+            app_name=PDFUnlocker
+            app_id={51FBCD54-2969-48AC-B0C0-E7ED765EE69D}
+            version=1.0.0
