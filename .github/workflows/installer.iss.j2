@@ -1,0 +1,31 @@
+#define MyAppName "{{ app_name }}"
+
+[Setup]
+AppId={{ app_id }}
+AppName={#MyAppName}
+AppVersion={{ version }}
+DefaultDirName={pf}\\{#MyAppName}
+DefaultGroupName={#MyAppName}
+LicenseFile=LICENSE
+OutputBaseFilename={#MyAppName}_{{ version }}_Installer
+Compression=lzma
+SolidCompression=yes
+ChangesEnvironment=true
+
+[Files]
+Source: "dist/pdfunlocker.exe"; DestDir: "{app}"; Flags: ignoreversion
+
+[Tasks]
+Name: modifypath; Description: Add application directory to your environmental path; Flags: unchecked
+
+[Code]
+const
+    ModPathName = 'modifypath';
+    ModPathType = 'user';
+
+function ModPathDir(): TArrayOfString;
+begin
+    setArrayLength(Result, 1)
+    Result[0] := ExpandConstant('{app}');
+end;
+#include "modpath.iss"

@@ -2,12 +2,12 @@ name: Build and Package
 
 on:
   push:
-    branches:
-      - main
-  pull_request:
-    branches:
-      - main
+    tags:
+      - v**
   workflow_dispatch:
+
+env:
+  VERSION: "0.1.0" # Hardcoded version for testing
 
 jobs:
   build:
@@ -40,24 +40,12 @@ jobs:
           choco install -y innosetup
         shell: cmd
 
-      - name: Create installer script
-        id: create-installer-script
+      - name: Install j2cli
+        run: pip install j2cli
+
+      - name: Render installer script
         run: |
-          echo [Setup] > installer.iss
-          echo AppName=PDFUnlocker >> installer.iss
-          set "VERSION=${{ github.ref }}"
-          set "VERSION=%VERSION:refs/heads/=%%"
-          echo AppVersion=%VERSION% >> installer.iss
-          echo DefaultDirName={pf}\\PDFUnlocker >> installer.iss
-          echo DefaultGroupName=PDFUnlocker >> installer.iss
-          echo OutputBaseFilename=PDFUnlockerInstaller_%VERSION% >> installer.iss
-          echo Compression=lzma >> installer.iss
-          echo SolidCompression=yes >> installer.iss
-          echo [Files] >> installer.iss
-          echo Source: "dist/pdfunlocker.exe"; DestDir: "{app}"; Flags: ignoreversion >> installer.iss
-          echo [Run] >> installer.iss
-          echo Filename: "{cmd"; Parameters: "/C setx PATH \"%%PATH%%;{app}\" /M"; Flags: runhidden shellexec runascurrentuser; >> installer.iss
-        shell: cmd
+          j2 installer.iss.j2 -o installer.iss -D app_name=PDFUnlocker -D app_id={51FBCD54-2969-48AC-B0C0-E7ED765EE69D} -D version=$VERSION
 
       - name: Build installer
         run: |
@@ -69,4 +57,4 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: installer
-          path: PDFUnlockerInstaller_${{ steps.create-installer-script.outputs.VERSION }}.exe
+          path: PDFUnlocker_$VERSION_Installer.exe
