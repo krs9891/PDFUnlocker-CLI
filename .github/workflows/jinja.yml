@@ -12,7 +12,7 @@ jobs:
       - name: rendering Inno Setup script
         uses: cuchi/jinja2-action@v1.2.2
         with:
-          template: installer.iss.j2
+          template: .github/workflows/installer.iss.j2
           output: installer.iss
           variables: |
             app_name=PDFUnlocker
