@@ -10,7 +10,7 @@ env:
   VERSION: "0.1.0" # Hardcoded version for testing
 
 jobs:
-  render:
+  render_installer_script:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -63,9 +63,7 @@ jobs:
         shell: cmd
 
       - name: Download installer script
-        uses: actions/download-artifact@v2
-        with:
-          name: installer_script
+        uses: actions/download-artifact@v4
 
       - name: Build installer
         run: |
@@ -73,8 +71,7 @@ jobs:
         shell: cmd
 
       - name: Upload build artifacts
-        id: upload-artifacts
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: installer
           path: PDFUnlocker_$VERSION_Installer.exe
