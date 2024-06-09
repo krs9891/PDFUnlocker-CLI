@@ -32,7 +32,7 @@ jobs:
           name: installer_script
           path: |
             installer.iss
-            .github/workflows/*/modpath.iss
+            .github/workflows/**/modpath.iss
 
   build:
     runs-on: windows-latest
@@ -63,7 +63,7 @@ jobs:
         uses: actions/download-artifact@v4
 
       - name: Compile .iss to .exe installer
-        uses: Minionguyjpro/Inno-Setup-Action@v1.2.
+        uses: Minionguyjpro/Inno-Setup-Action@v1.2.4
         with:
           path: installer_script/installer.iss
 
