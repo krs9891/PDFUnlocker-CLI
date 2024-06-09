@@ -1,13 +1,11 @@
-#define MyAppName "{{ app_name }}"
-
 [Setup]
 AppId={{ app_id }}
-AppName={#MyAppName}
+AppName={{ app_name }}
 AppVersion={{ version }}
-DefaultDirName={pf}\\{#MyAppName}
-DefaultGroupName={#MyAppName}
+DefaultDirName={pf}\\{{ app_name }}
+DefaultGroupName={{ app_name }}
 LicenseFile=LICENSE
-OutputBaseFilename={#MyAppName}_{{ version }}_Installer
+OutputBaseFilename={{ app_name }}_{{ version }}_Installer
 Compression=lzma
 SolidCompression=yes
 ChangesEnvironment=true
