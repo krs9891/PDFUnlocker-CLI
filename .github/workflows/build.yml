@@ -30,7 +30,9 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: installer_script
-          path: installer.iss
+          path: |
+            installer.iss
+            .github\workflows\modpath.iss
 
   build:
     runs-on: windows-latest
