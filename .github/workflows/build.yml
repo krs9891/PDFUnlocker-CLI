@@ -45,7 +45,8 @@ jobs:
 
       - name: Render installer script
         run: |
-          j2 installer.iss.j2 -o installer.iss -D app_name=PDFUnlocker -D app_id={51FBCD54-2969-48AC-B0C0-E7ED765EE69D} -D version=$VERSION
+          python -m j2cli.cli installer.iss.j2 -o installer.iss -D app_name=PDFUnlocker -D app_id={51FBCD54-2969-48AC-B0C0-E7ED765EE69D} -D version=$VERSION
+        shell: pwsh
 
       - name: Build installer
         run: |
