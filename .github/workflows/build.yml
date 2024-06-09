@@ -14,22 +14,22 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: rendering Inno Setup script
         uses: cuchi/jinja2-action@v1.2.2
         with:
-          template: installer.iss.j2
-          output: installer.iss
+          template: .github/workflows/installer.iss.j2
+          output_file: installer.iss
           variables: |
             app_name=PDFUnlocker
             app_id={51FBCD54-2969-48AC-B0C0-E7ED765EE69D}
-            version=$VERSION
+            version=0.1.0
 
       - name: Upload installer script
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
-          name: installer
+          name: installer_script
           path: installer.iss
 
   build:
@@ -37,7 +37,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: Set up Python
         uses: actions/setup-python@v2
@@ -65,7 +65,7 @@ jobs:
       - name: Download installer script
         uses: actions/download-artifact@v2
         with:
-          name: installer
+          name: installer_script
 
       - name: Build installer
         run: |
