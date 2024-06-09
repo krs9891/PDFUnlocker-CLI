@@ -13,7 +13,7 @@ jobs:
         uses: cuchi/jinja2-action@v1.2.2
         with:
           template: .github/workflows/installer.iss.j2
-          output: installer.iss
+          output_file: installer.iss
           variables: |
             app_name=PDFUnlocker
             app_id={51FBCD54-2969-48AC-B0C0-E7ED765EE69D}
