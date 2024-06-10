@@ -32,7 +32,7 @@ jobs:
           name: installer_script
           path: |
             installer.iss
-            .github/workflows/**/modpath.iss
+            modpath.iss
 
   build:
     runs-on: windows-latest
