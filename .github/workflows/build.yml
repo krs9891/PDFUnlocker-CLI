@@ -29,14 +29,14 @@ jobs:
       - name: Upload installer script
         uses: actions/upload-artifact@v4
         with:
-          name: installer_script
+          name: installer
           path: |
             installer.iss
             modpath.iss
+            LICENSE
 
-  build:
+  package:
     runs-on: windows-latest
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -59,16 +59,27 @@ jobs:
         run: |
           pyinstaller --onefile --name pdfunlocker pdf_unlocker.py
 
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: pdfunlocker
+          path: dist/
+
+  build_installer:
+    runs-on: windows-latest
+    steps:
       - name: Download installer script
         uses: actions/download-artifact@v4
+        with:
+          merge-multiple: true
 
       - name: Compile .iss to .exe installer
         uses: Minionguyjpro/Inno-Setup-Action@v1.2.4
         with:
-          path: installer_script/installer.iss
+          path: installer/installer.iss
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: installer
+          name: installer_exe
           path: PDFUnlocker_$VERSION_Installer.exe
