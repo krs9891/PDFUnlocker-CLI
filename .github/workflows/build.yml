@@ -23,7 +23,7 @@ jobs:
           output_file: installer.iss
           variables: |
             app_name=PDFUnlocker
-            app_id={51FBCD54-2969-48AC-B0C0-E7ED765EE69D}
+            app_id={{51FBCD54-2969-48AC-B0C0-E7ED765EE69D}
             version=0.1.0
 
       - name: Upload installer script
