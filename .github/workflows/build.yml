@@ -68,7 +68,10 @@ jobs:
   build_installer:
     runs-on: windows-latest
     steps:
-      - name: Download installer script
+      - name: checkout code
+        uses: actions/checkout@v4
+
+      - name: Download artifacts
         uses: actions/download-artifact@v4
         with:
           merge-multiple: true
@@ -76,7 +79,7 @@ jobs:
       - name: Compile .iss to .exe installer
         uses: Minionguyjpro/Inno-Setup-Action@v1.2.4
         with:
-          path: installer/installer.iss
+          path: installer.iss
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
