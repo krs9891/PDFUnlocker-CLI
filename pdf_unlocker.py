@@ -55,15 +55,27 @@ def get_pdf_choices_from_dir():
 def main():
     parser = argparse.ArgumentParser(description="Unlock PDF files by extracting all pages to a new PDF file.")
     parser.add_argument("-v", "--version", action="version", version=f"PDFUnlocker-CLI version {__version__}")
+    parser.add_argument("-a", "--all", action="store_true", help="Unlock all PDF files in the current directory.")
     args = parser.parse_args()
     
     try:
+        if args.all:
+            files_to_process = [file for file in os.listdir('.') if file.endswith(".pdf")]
+            if not files_to_process:
+                color_print([("fg:red", "No PDF files found in the current directory.")])
+                exit()
+
+            for file in files_to_process:
+                extract_pages_to_new_pdf(file)
+            return
+
+        # Default behavior with inquirer prompts
         files_list = get_pdf_choices_from_dir()
 
         action = inquirer.select(
             message="What do you want to do?",
             choices=[Choice(value="All", name="Unlock All PDFs"), 
-                    Choice(value="Select", name="Select PDFs")],
+                     Choice(value="Select", name="Select PDFs")],
             default="All"
         ).execute()
 
