@@ -8,16 +8,34 @@ PDF Unlocker is a Python utility that helps to unlock PDF files. It uses the PyP
 
 To install PDF Unlocker, download the installer and follow the prompts. This will install the utility and add it to your system's path, allowing you to run it from any directory.
 
+**Note for users upgrading from 0.1.x:** the command was renamed from `pdfunlocker` to `pu` in 0.2.0. The installer removes the old executable, so `pdfunlocker` will no longer work.
+
+### Running without installing
+
+If you have Python installed, you can clone the repository, `pip install -r requirements.txt`, and run [pu.bat](pu.bat) instead. It activates `.venv` if one is present and forwards all arguments to the script.
+
 ## Usage
 
 1. Open Windows Terminal in the directory containing the PDF files you want to unlock.
-2. Run the command `pdfunlocker`.
+2. Run the command `pu`.
 3. You will be prompted with the question "What do you want to do?" with two options:
    - "Unlock All PDFs": This will unlock all PDF files in the directory.
    - "Select PDFs": This will allow you to select specific PDF files to unlock.
 4. If you choose "Select PDFs", you will be able to select the PDF files you want to unlock from the list. Navigate through the list using the arrow keys. Select a file by pressing the spacebar, and confirm your selection by pressing Enter.
 5. After selecting the files, you will be asked to confirm if you want to proceed.
 6. If you confirm, the script will unlock the selected PDF files, overwriting the original files with the unlocked versions.
+
+### Options
+
+| Flag | Description |
+| --- | --- |
+| `-a`, `--all` | Unlock every PDF in the current directory without any prompts. Useful in scripts. |
+| `-v`, `--version` | Print the version and exit. |
+| `-h`, `--help` | Show usage. |
+
+```
+pu -a
+```
 
 ## Error Handling
 
