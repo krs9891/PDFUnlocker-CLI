@@ -123,10 +123,17 @@ jobs:
     permissions:
       contents: write
     steps:
-      - name: Download artifacts
+      - name: Download installer
         uses: actions/download-artifact@v4
         with:
           name: installer_exe
+
+      # Published alongside the installer for anyone who can't or won't run
+      # one: pu.exe is standalone and needs no install step.
+      - name: Download portable executable
+        uses: actions/download-artifact@v4
+        with:
+          name: pu
 
       - name: Create release
         uses: softprops/action-gh-release@v3
@@ -136,4 +143,6 @@ jobs:
           draft: false
           prerelease: false
           generate_release_notes: true
-          files: ${{ env.APP_NAME }}_${{ github.ref_name }}_Installer.exe
+          files: |
+            ${{ env.APP_NAME }}_${{ github.ref_name }}_Installer.exe
+            pu.exe

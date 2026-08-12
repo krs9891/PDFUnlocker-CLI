@@ -2,7 +2,12 @@
 AppId={{ app_id }}
 AppName={{ app_name }}
 AppVersion={{ version }}
-DefaultDirName={pf}\{{ app_name }}
+; Per-user install. The people this ships to have no admin rights on their
+; company laptops, so setup must never request elevation. Unelevated,
+; {autopf} resolves to %LOCALAPPDATA%\Programs, and modpath.iss already
+; writes PATH to HKCU\Environment, so nothing here needs administrator.
+PrivilegesRequired=lowest
+DefaultDirName={autopf}\{{ app_name }}
 DefaultGroupName={{ app_name }}
 LicenseFile=LICENSE
 OutputBaseFilename={{ app_name }}_{{ version }}_Installer

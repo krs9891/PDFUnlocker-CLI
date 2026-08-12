@@ -1,4 +1,5 @@
 import os
+import sys
 import PyPDF2
 import shutil
 import PyPDF2.errors
@@ -10,7 +11,58 @@ from InquirerPy.utils import color_print
 from yaspin import yaspin
 from version import __version__
 
-sp = yaspin()
+class PlainSpinner:
+    """Drop-in stand-in for yaspin, for output that can't show an animation.
+
+    yaspin animates with Braille characters. When stdout is redirected, or the
+    console runs a legacy codepage, encoding those raises UnicodeEncodeError
+    inside the spinner thread and dumps a traceback over the output. Piping
+    `pu -a` to a file is ordinary usage, so print plain lines instead.
+    """
+
+    def __init__(self):
+        self.text = ""
+        self.color = None
+
+    def start(self):
+        pass
+
+    def stop(self):
+        pass
+
+    def ok(self, mark="OK"):
+        print(f"{mark} {self.text}")
+
+    def fail(self, mark="FAIL"):
+        print(f"{mark} {self.text}")
+
+    def write(self, message):
+        print(message)
+
+def stdout_is_console():
+    """Whether prompt_toolkit can be used.
+
+    Both color_print and the inquirer prompts go through prompt_toolkit, which
+    raises NoConsoleScreenBufferError when stdout isn't a real console.
+    """
+    return sys.stdout.isatty()
+
+def supports_spinner():
+    if not stdout_is_console():
+        return False
+    try:
+        "⠋".encode(sys.stdout.encoding or "ascii")
+    except (UnicodeEncodeError, LookupError):
+        return False
+    return True
+
+def print_error(message):
+    if stdout_is_console():
+        color_print([("fg:red", message)])
+    else:
+        print(message)
+
+sp = yaspin() if supports_spinner() else PlainSpinner()
 
 def handle_failure(message):
     sp.color = "red"
@@ -48,7 +100,7 @@ def extract_pages_to_new_pdf(input_pdf_path):
 def get_pdf_choices_from_dir():
     files = [Choice(file) for file in os.listdir('.') if file.endswith(".pdf")]
     if not files:
-        color_print([("fg:red", "No PDF files found in the current directory.")])
+        print_error("No PDF files found in the current directory.")
         exit()
     return files
 
@@ -62,14 +114,18 @@ def main():
         if args.all:
             files_to_process = [file for file in os.listdir('.') if file.endswith(".pdf")]
             if not files_to_process:
-                color_print([("fg:red", "No PDF files found in the current directory.")])
+                print_error("No PDF files found in the current directory.")
                 exit()
 
             for file in files_to_process:
                 extract_pages_to_new_pdf(file)
             return
 
-        # Default behavior with inquirer prompts
+        # Default behavior with inquirer prompts, which need a real console
+        if not stdout_is_console():
+            print_error("This command needs an interactive terminal. Use -a to unlock every PDF in the current directory without prompts.")
+            exit(1)
+
         files_list = get_pdf_choices_from_dir()
 
         action = inquirer.select(

@@ -6,11 +6,31 @@ PDF Unlocker is a Python utility that helps to unlock PDF files. It uses the PyP
 
 ## Installation
 
-To install PDF Unlocker, download the installer and follow the prompts. This will install the utility and add it to your system's path, allowing you to run it from any directory.
+**No administrator rights are required.** Both options below install into your own user profile and never prompt for elevation.
 
-**Note for users upgrading from 0.1.x:** the command was renamed from `pdfunlocker` to `pu` in 0.2.0. The installer removes the old executable, so `pdfunlocker` will no longer work.
+### Option 1: the installer (recommended)
 
-### Running without installing
+Download `PDFUnlocker_<version>_Installer.exe` from the [latest release](https://github.com/krs9891/PDFUnlocker-CLI/releases/latest) and run it. It installs to `%LOCALAPPDATA%\Programs\PDFUnlocker` and adds that folder to your personal `PATH`, so you can type `pu` in any directory.
+
+Close and reopen your terminal after installing, otherwise it won't have picked up the new `PATH` yet.
+
+### Option 2: the portable executable
+
+Download `pu.exe` from the same release and put it wherever you like. Run it as `.\pu.exe` from the folder you keep it in, or add that folder to your `PATH` yourself. Nothing is installed and there is nothing to uninstall — delete the file when you're done with it.
+
+### "Windows protected your PC"
+
+The download is not code-signed, so the first time you run it Windows SmartScreen shows a blue warning. This is expected and simply means the file is new, not that anything is wrong with it.
+
+To continue: click **More info**, then the **Run anyway** button that appears. The "Run anyway" button is hidden until you click "More info" — that's the step most people miss.
+
+If your browser blocks the download itself, choose **Keep** in the downloads bar.
+
+### Upgrading from 0.1.x
+
+The command was renamed from `pdfunlocker` to `pu` in 0.2.0. Version 0.1.x installed to `C:\Program Files` and required an administrator; if someone installed it for you, ask them to uninstall it from **Settings → Apps** so the old `pdfunlocker` command doesn't linger on your `PATH`.
+
+### Running from source
 
 If you have Python installed, you can clone the repository, `pip install -r requirements.txt`, and run [pu.bat](pu.bat) instead. It activates `.venv` if one is present and forwards all arguments to the script.
 
