@@ -4,9 +4,18 @@ on:
   push:
     tags:
       - "v*.*.*"
+  # Builds the installer without publishing, so the pipeline can be verified
+  # before a tag is pushed. The release job is skipped for manual runs.
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Version label to stamp into the test build"
+        required: false
+        default: "v0.0.0-test"
 
 env:
   APP_NAME: PDFUnlocker
+  APP_ID: "{{51FBCD54-2969-48AC-B0C0-E7ED765EE69D}"
 
 jobs:
   render_installer_script:
@@ -15,15 +24,34 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: rendering Inno Setup script
-        uses: cuchi/jinja2-action@v1.2.2
+      - name: Set up Python
+        uses: actions/setup-python@v5
         with:
-          template: .github/workflows/installer.iss.j2
-          output_file: installer.iss
-          variables: |
-            app_name=${{ env.APP_NAME }}
-            app_id={{51FBCD54-2969-48AC-B0C0-E7ED765EE69D}
-            version=${{ github.ref_name }}
+          python-version: '3.12'
+
+      - name: Install Jinja2
+        run: pip install "jinja2~=3.1"
+
+      # Rendered inline rather than via cuchi/jinja2-action: that action builds
+      # a Docker image on every run, and its unpinned `pip install poetry` broke
+      # the whole pipeline. Three substitutions don't justify the dependency.
+      - name: Render Inno Setup script
+        env:
+          VERSION: ${{ inputs.version || github.ref_name }}
+        run: |
+          python - <<'PY'
+          import os
+          from jinja2 import Template
+
+          template = Template(open('.github/workflows/installer.iss.j2').read())
+          rendered = template.render(
+              app_name=os.environ['APP_NAME'],
+              app_id=os.environ['APP_ID'],
+              version=os.environ['VERSION'],
+          )
+          open('installer.iss', 'w').write(rendered)
+          print(rendered)
+          PY
 
       - name: Upload installer script
         uses: actions/upload-artifact@v4
@@ -91,6 +119,7 @@ jobs:
   release:
     runs-on: ubuntu-latest
     needs: build_installer
+    if: startsWith(github.ref, 'refs/tags/')
     permissions:
       contents: write
     steps:
