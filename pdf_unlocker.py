@@ -101,7 +101,7 @@ def get_pdf_choices_from_dir():
     files = [Choice(file) for file in os.listdir('.') if file.endswith(".pdf")]
     if not files:
         print_error("No PDF files found in the current directory.")
-        exit()
+        sys.exit()
     return files
 
 def main():
@@ -115,7 +115,7 @@ def main():
             files_to_process = [file for file in os.listdir('.') if file.endswith(".pdf")]
             if not files_to_process:
                 print_error("No PDF files found in the current directory.")
-                exit()
+                sys.exit()
 
             for file in files_to_process:
                 extract_pages_to_new_pdf(file)
@@ -124,7 +124,7 @@ def main():
         # Default behavior with inquirer prompts, which need a real console
         if not stdout_is_console():
             print_error("This command needs an interactive terminal. Use -a to unlock every PDF in the current directory without prompts.")
-            exit(1)
+            sys.exit(1)
 
         files_list = get_pdf_choices_from_dir()
 
@@ -157,8 +157,11 @@ def main():
                 extract_pages_to_new_pdf(file)
 
     except KeyboardInterrupt:
+        # sys.exit, not exit: the latter is installed by the site module and
+        # doesn't exist in the PyInstaller-frozen build, where calling it
+        # raises NameError instead of exiting.
         print("\nExiting...")
-        exit()
+        sys.exit()
 
 if __name__ == "__main__":
     main()
